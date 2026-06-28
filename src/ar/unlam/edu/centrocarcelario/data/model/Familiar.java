@@ -8,6 +8,7 @@ public class Familiar extends Persona{
 	public Familiar(Integer dni, String nombre, String apellido, LocalDate fdn,Integer telefono) {
 		super(dni, nombre, apellido, fdn);
 		// TODO Auto-generated constructor stub
+		this.telefono=telefono;
 	}
 
 	public Integer getTelefono() {

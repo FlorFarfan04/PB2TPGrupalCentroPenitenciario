@@ -10,16 +10,22 @@ public class Recluso extends Persona {
 
     private Double condenaBase;
     private Double factorConducta;
+    
     List<TipoCrimen> listaTipoCrimen;
     HashSet<Registro> historialDisciplinario;
+    
     private TipoRecluso tipoRecluso;
 
-    public Recluso(Integer dni, String nombre, String apellido, LocalDate fdn) {
+    public Recluso(Integer dni, String nombre, String apellido, LocalDate fdn,Double condenaBase, Double factorConducta) {
 	super(dni, nombre, apellido, fdn);
+	
+	this.condenaBase = condenaBase;
+	this.factorConducta = factorConducta;
+	
 	listaTipoCrimen = new ArrayList<TipoCrimen>();
 	historialDisciplinario = new HashSet<Registro>();
 
-	// TODO Auto-generated constructor stub
+
     }
 
     public Double getCondenaBase() {
@@ -53,8 +59,17 @@ public class Recluso extends Persona {
     public void setHistorialDisciplinario(HashSet<Registro> historialDisciplinario) {
 	this.historialDisciplinario = historialDisciplinario;
     }
+    
 
-    public void calcularTipoRecluso() {
+    public TipoRecluso getTipoRecluso() {
+		return tipoRecluso;
+	}
+
+	public void setTipoRecluso(TipoRecluso tipoRecluso) {
+		this.tipoRecluso = tipoRecluso;
+	}
+
+	public void calcularTipoRecluso() {
 
 	if (this.listaTipoCrimen.contains(TipoCrimen.DELITO_LESA_HUMANIDAD)
 		|| this.listaTipoCrimen.contains(TipoCrimen.CORRUPCION)

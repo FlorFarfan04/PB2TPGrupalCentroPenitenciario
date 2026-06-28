@@ -1,23 +1,27 @@
 package ar.unlam.edu.centrocarcelario.data.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-public class Turno {
+import ar.edu.unlam.dominio.Turno;
 
+public class Turno implements Comparable<Turno>{
 	private Integer idTurno;
-	private LocalDateTime fechaHora;
-	private Recluso recluso;
 	private Familiar visitante;
-	private Guardia guardiaResponsable;
-	private EstadoSolicitud estadoSolicitud;
-	
-	public Turno(Integer idTurno, LocalDateTime fechaHora, Recluso recluso, Familiar visitante,
-			EstadoSolicitud estadoSolicitud) {
+	private String dniRecluso;
+	private LocalDateTime fechaHora;
+	private Guardia guardia;
+	private EstadoSolicitud estado;
+
+	public Turno(Integer idTurno, Familiar visitante, String dniRecluso, LocalDateTime fechaHora,
+			Guardia guardia, EstadoSolicitud estado) {
+
 		this.idTurno = idTurno;
-		this.fechaHora = fechaHora;
-		this.recluso = recluso;
 		this.visitante = visitante;
-		this.estadoSolicitud = estadoSolicitud;
+		this.dniRecluso = dniRecluso;
+		this.fechaHora = fechaHora;
+		this.guardia = guardia;
+		this.estado = estado;
 	}
 
 	public Integer getIdTurno() {
@@ -28,22 +32,6 @@ public class Turno {
 		this.idTurno = idTurno;
 	}
 
-	public LocalDateTime getFechaHora() {
-		return fechaHora;
-	}
-
-	public void setFechaHora(LocalDateTime fechaHora) {
-		this.fechaHora = fechaHora;
-	}
-
-	public Recluso getRecluso() {
-		return recluso;
-	}
-
-	public void setRecluso(Recluso recluso) {
-		this.recluso = recluso;
-	}
-
 	public Familiar getVisitante() {
 		return visitante;
 	}
@@ -52,12 +40,53 @@ public class Turno {
 		this.visitante = visitante;
 	}
 
-	public EstadoSolicitud getEstadoSolicitud() {
-		return estadoSolicitud;
+	public String getDniRecluso() {
+		return dniRecluso;
 	}
 
-	public void setEstadoSolicitud(EstadoSolicitud estadoSolicitud) {
-		this.estadoSolicitud = estadoSolicitud;
+	public void setDniRecluso(String dniRecluso) {
+		this.dniRecluso = dniRecluso;
 	}
-	
+
+	public LocalDateTime getFechaHora() {
+		return fechaHora;
+	}
+
+	public void setFechaHora(LocalDateTime fechaHora) {
+		this.fechaHora = fechaHora;
+	}
+
+	public Guardia getGuardia() {
+		return guardia;
+	}
+
+	public void setGuardia(Guardia guardia) {
+		this.guardia = guardia;
+	}
+
+	public EstadoSolicitud getEstado() {
+		return estado;
+	}
+
+	public void setEstado(EstadoSolicitud estado) {
+		this.estado = estado;
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(idTurno);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Turno))
+			return false;
+		Turno other = (Turno) obj;
+		return Objects.equals(idTurno, other.idTurno);
+	}
+	@Override
+	public int compareTo(Turno otro) {
+		return this.fechaHora.compareTo(otro.fechaHora);
+	}
 }

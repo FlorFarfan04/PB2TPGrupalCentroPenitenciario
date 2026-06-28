@@ -24,7 +24,7 @@ public class CentroCarcelarioTest {
 	String nombre = "Pablo";
 	String apellido = "Gomez";
 	LocalDate fdn = LocalDate.of(2000, 12, 12);
-	Persona p = new Recluso(dni, nombre, apellido, fdn);
+	Persona p = new Recluso(dni, nombre, apellido, fdn,10.5,1.0);
 	// WHEN
 	// THEN
 	assertEquals(0, 0);
