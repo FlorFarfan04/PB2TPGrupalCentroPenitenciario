@@ -1,32 +1,29 @@
 package ar.unlam.edu.centrocarcelario.data.model;
 
-import java.util.Objects;
-
 public class AutorizacionVisita {
-	private String dniFamiliar;
-	private TipoParentesco parentesco;
-	
-	public AutorizacionVisita(String dniFamiliar, TipoParentesco parentesco) {
 
+	private Integer dniFamiliar;
+	private Parentesco parentesco;
+	
+	public AutorizacionVisita(Integer dniFamiliar, Parentesco parentesco) {
 		this.dniFamiliar = dniFamiliar;
 		this.parentesco = parentesco;
 	}
 
-	public String getDniFamiliar() {
+	public Integer getDniFamiliar() {
 		return dniFamiliar;
 	}
 
-	public void setDniFamiliar(String dniFamiliar) {
+	public void setDniFamiliar(Integer dniFamiliar) {
 		this.dniFamiliar = dniFamiliar;
 	}
 
-	public TipoParentesco getParentesco() {
+	public Parentesco getParentesco() {
 		return parentesco;
 	}
 
-	public void setParentesco(TipoParentesco parentesco) {
+	public void setParentesco(Parentesco parentesco) {
 		this.parentesco = parentesco;
 	}
-
 	
 }
