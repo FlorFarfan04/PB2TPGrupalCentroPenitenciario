@@ -28,19 +28,5 @@ public class AutorizacionVisita {
 		this.parentesco = parentesco;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(dniFamiliar);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof AutorizacionVisita))
-			return false;
-		AutorizacionVisita other = (AutorizacionVisita) obj;
-		return Objects.equals(dniFamiliar, other.dniFamiliar);
-	}
 	
 }

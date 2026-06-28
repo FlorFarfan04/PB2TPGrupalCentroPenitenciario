@@ -1,6 +1,9 @@
 package ar.unlam.edu.centrocarcelario.data.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+
+import ar.edu.unlam.dominio.Turno;
 
 public class Turno implements Comparable<Turno>{
 	private Integer idTurno;
@@ -67,6 +70,20 @@ public class Turno implements Comparable<Turno>{
 
 	public void setEstado(EstadoSolicitud estado) {
 		this.estado = estado;
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(idTurno);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Turno))
+			return false;
+		Turno other = (Turno) obj;
+		return Objects.equals(idTurno, other.idTurno);
 	}
 	@Override
 	public int compareTo(Turno otro) {
