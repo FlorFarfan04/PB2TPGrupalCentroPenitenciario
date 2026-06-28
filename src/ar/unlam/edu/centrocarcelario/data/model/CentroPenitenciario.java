@@ -1,8 +1,8 @@
 package ar.unlam.edu.centrocarcelario.data.model;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.TreeSet;
 
 public class CentroPenitenciario {
@@ -10,13 +10,13 @@ public class CentroPenitenciario {
 	private HashSet<Recluso> reclusos;
 	private HashSet<Guardia> guardias;
 
-	private HashMap<String, Familiar> familiares;
+	private HashMap<Integer, Familiar> familiares;
 
-	private HashMap<String, HashSet<AutorizacionVisita>> autorizaciones;
+	private HashMap<Integer, HashSet<AutorizacionVisita>> autorizaciones;
 
-	private HashMap<String, List<Turno>> historialTurnos;
+	private HashMap<Integer, HashSet<Turno>> historialTurnos;
 
-	private HashMap<String, TreeSet<Turno>> agendaDiaria;
+	private HashMap<LocalDate, TreeSet<Turno>> agendaDiaria;
 
 	public CentroPenitenciario() {
 
@@ -48,35 +48,35 @@ public class CentroPenitenciario {
 		this.guardias = guardias;
 	}
 
-	public HashMap<String, Familiar> getFamiliares() {
+	public HashMap<Integer, Familiar> getFamiliares() {
 		return familiares;
 	}
 
-	public void setFamiliares(HashMap<String, Familiar> familiares) {
+	public void setFamiliares(HashMap<Integer, Familiar> familiares) {
 		this.familiares = familiares;
 	}
 
-	public HashMap<String, HashSet<AutorizacionVisita>> getAutorizaciones() {
+	public HashMap<Integer, HashSet<AutorizacionVisita>> getAutorizaciones() {
 		return autorizaciones;
 	}
 
-	public void setAutorizaciones(HashMap<String, HashSet<AutorizacionVisita>> autorizaciones) {
+	public void setAutorizaciones(HashMap<Integer, HashSet<AutorizacionVisita>> autorizaciones) {
 		this.autorizaciones = autorizaciones;
 	}
 
-	public HashMap<String, List<Turno>> getHistorialTurnos() {
+	public HashMap<Integer, HashSet<Turno>> getHistorialTurnos() {
 		return historialTurnos;
 	}
 
-	public void setHistorialTurnos(HashMap<String, List<Turno>> historialTurnos) {
+	public void setHistorialTurnos(HashMap<Integer, HashSet<Turno>> historialTurnos) {
 		this.historialTurnos = historialTurnos;
 	}
 
-	public HashMap<String, TreeSet<Turno>> getAgendaDiaria() {
+	public HashMap<LocalDate, TreeSet<Turno>> getAgendaDiaria() {
 		return agendaDiaria;
 	}
 
-	public void setAgendaDiaria(HashMap<String, TreeSet<Turno>> agendaDiaria) {
+	public void setAgendaDiaria(HashMap<LocalDate, TreeSet<Turno>> agendaDiaria) {
 		this.agendaDiaria = agendaDiaria;
 	}
 	
