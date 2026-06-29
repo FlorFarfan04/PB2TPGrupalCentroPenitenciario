@@ -3,17 +3,16 @@ package ar.unlam.edu.centrocarcelario.data.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import ar.edu.unlam.dominio.Turno;
 
 public class Turno implements Comparable<Turno>{
 	private Integer idTurno;
 	private Familiar visitante;
-	private String dniRecluso;
+	private Integer dniRecluso;
 	private LocalDateTime fechaHora;
 	private Guardia guardia;
 	private EstadoSolicitud estado;
 
-	public Turno(Integer idTurno, Familiar visitante, String dniRecluso, LocalDateTime fechaHora,
+	public Turno(Integer idTurno, Familiar visitante, Integer dniRecluso, LocalDateTime fechaHora,
 			Guardia guardia, EstadoSolicitud estado) {
 
 		this.idTurno = idTurno;
@@ -40,11 +39,11 @@ public class Turno implements Comparable<Turno>{
 		this.visitante = visitante;
 	}
 
-	public String getDniRecluso() {
+	public Integer getDniRecluso() {
 		return dniRecluso;
 	}
 
-	public void setDniRecluso(String dniRecluso) {
+	public void setDniRecluso(Integer dniRecluso) {
 		this.dniRecluso = dniRecluso;
 	}
 

@@ -1,35 +1,46 @@
 package ar.unlam.edu.centrocarcelario.data.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 public class CentroCarcelario {
-	
-	private String nombre;
-	private HashSet<Recluso> listaDeReclusos;
+
+	private HashSet<Recluso> reclusos;
 	private HashSet<Guardia> guardias;
-	private HashSet<Familiar> familiares;
-	
-	public CentroCarcelario(String nombre) {
-		this.nombre = nombre;
-		this.listaDeReclusos = new HashSet<Recluso>();
-		this.guardias = new HashSet<Guardia>();
-		this.familiares = new HashSet<Familiar>();
+
+	private HashMap<Integer, Familiar> familiares;
+
+	private HashMap<Integer, HashSet<AutorizacionVisita>> autorizaciones;
+
+	private HashMap<Integer, HashSet<Turno>> historialTurnos;
+
+	private HashMap<LocalDate, TreeSet<Turno>> agendaDiaria;
+
+	private static final Integer CUPO_MAXIMO_DIARIO = 5;
+
+	public CentroCarcelario() {
+
+		this.reclusos = new HashSet<>();
+		this.guardias = new HashSet<>();
+
+		this.familiares = new HashMap<>();
+
+		this.autorizaciones = new HashMap<>();
+
+		this.historialTurnos = new HashMap<>();
+
+		this.agendaDiaria = new HashMap<>();
 	}
 
-	public String getNombre() {
-		return nombre;
+	public HashSet<Recluso> getReclusos() {
+		return reclusos;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public HashSet<Recluso> getListaDeReclusos() {
-		return listaDeReclusos;
-	}
-
-	public void setListaDeReclusos(HashSet<Recluso> listaDeReclusos) {
-		this.listaDeReclusos = listaDeReclusos;
+	public void setReclusos(HashSet<Recluso> reclusos) {
+		this.reclusos = reclusos;
 	}
 
 	public HashSet<Guardia> getGuardias() {
@@ -40,12 +51,114 @@ public class CentroCarcelario {
 		this.guardias = guardias;
 	}
 
-	public HashSet<Familiar> getFamiliares() {
+	public HashMap<Integer, Familiar> getFamiliares() {
 		return familiares;
 	}
 
-	public void setFamiliares(HashSet<Familiar> familiares) {
+	public void setFamiliares(HashMap<Integer, Familiar> familiares) {
 		this.familiares = familiares;
 	}
-	
+
+	public HashMap<Integer, HashSet<AutorizacionVisita>> getAutorizaciones() {
+		return autorizaciones;
+	}
+
+	public void setAutorizaciones(HashMap<Integer, HashSet<AutorizacionVisita>> autorizaciones) {
+		this.autorizaciones = autorizaciones;
+	}
+
+	public HashMap<Integer, HashSet<Turno>> getHistorialTurnos() {
+		return historialTurnos;
+	}
+
+	public void setHistorialTurnos(HashMap<Integer, HashSet<Turno>> historialTurnos) {
+		this.historialTurnos = historialTurnos;
+	}
+
+	public HashMap<LocalDate, TreeSet<Turno>> getAgendaDiaria() {
+		return agendaDiaria;
+	}
+
+	public void setAgendaDiaria(HashMap<LocalDate, TreeSet<Turno>> agendaDiaria) {
+		this.agendaDiaria = agendaDiaria;
+	}
+
+	public void registrarRecluso(Recluso recluso) {
+		// TODO Auto-generated method stub
+		this.reclusos.add(recluso);
+
+	}
+
+	public void registrarFamiliar(Familiar familiar) {
+		// TODO Auto-generated method stub
+		this.familiares.put(familiar.getDni(), familiar);
+
+	}
+
+	public void registrarGuardia(Guardia guardia) {
+		guardias.add(guardia);
+	}
+
+	public Boolean registrarAutorizacion(Integer dniRecluso, Integer dniFamiliar, Parentesco parentesco)
+			throws FamiliarNoEncontradoException {
+		if (!familiares.containsKey(dniFamiliar)) {
+			throw new FamiliarNoEncontradoException();
+		}
+
+		AutorizacionVisita autorizacion = new AutorizacionVisita(dniFamiliar, parentesco);
+
+		if (!autorizaciones.containsKey(dniRecluso)) {
+			autorizaciones.put(dniRecluso, new HashSet<>());
+		}
+
+		autorizaciones.get(dniRecluso).add(autorizacion);
+
+		return true;
+	}
+
+	public Boolean solicitarTurno(Turno turno) throws FamiliarNoAutorizadoException, TurnoNoDisponibleException,
+			CupoExcedidoException, ReclusoNoEncontradoException, GuardiaNoDisponibleException {
+
+		if (turno.getGuardia() == null) {
+			turno.setGuardia(new Guardia(99999999, "Matias", "Gomes", LocalDate.of(1995, 10, 10), "Flexible"));
+		}
+
+		if (!autorizaciones.containsKey(turno.getDniRecluso())) {
+			throw new ReclusoNoEncontradoException();
+		}
+
+		HashSet<AutorizacionVisita> autorizados = autorizaciones.get(turno.getDniRecluso());
+
+		boolean autorizado = false;
+
+		for (AutorizacionVisita autorizacion : autorizados) {
+
+			if (autorizacion.getDniFamiliar().equals(turno.getVisitante().getDni())) {
+				autorizado = true;
+				break;
+			}
+		}
+
+		if (!autorizado) {
+			throw new FamiliarNoAutorizadoException();
+		}
+
+		if (!historialTurnos.containsKey(turno.getDniRecluso())) {
+			historialTurnos.put(turno.getDniRecluso(), new HashSet<>());
+		}
+
+		historialTurnos.get(turno.getDniRecluso()).add(turno);
+
+		return true;
+	}
+
+	public void agregarSancion(Recluso recluso1, Sancion sancion) {
+		recluso1.historialDisciplinario.add(sancion);
+
+	}
+
+	public Double calcularCondena(Recluso recluso) {
+		return recluso.calcularCondena();
+	}
+
 }
