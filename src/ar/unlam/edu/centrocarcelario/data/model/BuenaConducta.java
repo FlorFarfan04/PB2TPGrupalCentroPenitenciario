@@ -6,9 +6,7 @@ public class BuenaConducta extends RegistroDisciplinario {
 	private Integer puntaje;
 
 	public BuenaConducta(LocalDate fecha, String descripcion, Integer puntaje) {
-
 		super(fecha, descripcion);
-
 		this.puntaje = puntaje;
 	}
 

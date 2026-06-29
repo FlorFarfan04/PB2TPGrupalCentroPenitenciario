@@ -7,7 +7,6 @@ public class RegistroDisciplinario implements Comparable<RegistroDisciplinario> 
 	private String descripcion;
 
 	public RegistroDisciplinario(LocalDate fecha, String descripcion) {
-
 		this.fecha = fecha;
 		this.descripcion = descripcion;
 	}

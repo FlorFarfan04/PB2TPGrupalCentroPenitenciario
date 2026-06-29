@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 
 public class Recluso extends Persona {
 
@@ -11,7 +12,7 @@ public class Recluso extends Persona {
 	private Double factorConducta;
 
 	List<TipoCrimen> listaTipoCrimen;
-	HashSet<RegistroDisciplinario> historialDisciplinario;
+	TreeSet<RegistroDisciplinario> historialDisciplinario;
 
 	private TipoRecluso tipoRecluso;
 
@@ -23,10 +24,11 @@ public class Recluso extends Persona {
 		this.factorConducta = factorConducta;
 
 		listaTipoCrimen = new ArrayList<TipoCrimen>();
-		historialDisciplinario = new HashSet<RegistroDisciplinario>();
+		historialDisciplinario = new TreeSet<RegistroDisciplinario>();
 
 	}
-
+	
+	
 	public Double getCondenaBase() {
 		return condenaBase;
 	}
@@ -51,13 +53,15 @@ public class Recluso extends Persona {
 		this.listaTipoCrimen = listaTipoCrimen;
 	}
 
-	public HashSet<RegistroDisciplinario> getHistorialDisciplinario() {
+	public TreeSet<RegistroDisciplinario> getHistorialDisciplinario() {
 		return historialDisciplinario;
 	}
 
-	public void setHistorialDisciplinario(HashSet<RegistroDisciplinario> historialDisciplinario) {
+
+	public void setHistorialDisciplinario(TreeSet<RegistroDisciplinario> historialDisciplinario) {
 		this.historialDisciplinario = historialDisciplinario;
 	}
+
 
 	public TipoRecluso getTipoRecluso() {
 		return tipoRecluso;
@@ -71,7 +75,8 @@ public class Recluso extends Persona {
 
 		if (this.listaTipoCrimen.contains(TipoCrimen.DELITO_LESA_HUMANIDAD)
 				|| this.listaTipoCrimen.contains(TipoCrimen.CORRUPCION)
-				|| this.listaTipoCrimen.contains(TipoCrimen.ASESINATO)) {
+				|| this.listaTipoCrimen.contains(TipoCrimen.ASESINATO)
+				|| this.condenaBase >= 50.0) {
 
 			this.tipoRecluso = TipoRecluso.PERPETUO;
 		} else {
