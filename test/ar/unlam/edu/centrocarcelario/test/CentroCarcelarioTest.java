@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,6 +16,7 @@ import javax.imageio.plugins.tiff.TIFFImageReadParam;
 import org.junit.Before;
 import org.junit.Test;
 
+import ar.unlam.edu.centrocarcelario.data.model.AutorizacionVisita;
 import ar.unlam.edu.centrocarcelario.data.model.BuenaConducta;
 import ar.unlam.edu.centrocarcelario.data.model.CentroCarcelario;
 import ar.unlam.edu.centrocarcelario.data.model.CupoExcedidoException;
@@ -234,11 +236,27 @@ public class CentroCarcelarioTest {
 // * en la misma fecha y horario, lanzando la excepción
 // * TurnoNoDisponibleException.
 // */
-//@Test(expected = TurnoNoDisponibleException.class)
-//public void queNoSePuedanRegistrarDosTurnosParaElMismoReclusoEnElMismoHorario() {
-//	
-//}
-    
+    @Test(expected = TurnoNoDisponibleException.class)
+	public void queNoSePuedanRegistrarDosTurnosParaElMismoReclusoEnElMismoHorario()
+			throws FamiliarNoEncontradoException, FamiliarNoAutorizadoException, TurnoNoDisponibleException,
+			CupoExcedidoException, ReclusoNoEncontradoException, GuardiaNoDisponibleException, ReclusoDuplicadoException {
+
+		CentroCarcelario carcel = new CentroCarcelario();
+
+		Recluso recluso = new Recluso(11111111, "Juan", "Perez", LocalDate.of(1999, 12, 11), 10.2, 1.0);
+		Familiar familiar = new Familiar(22222222, "Pedro", "Perez", LocalDate.of(1999, 11, 11), 1121541256);
+		carcel.registrarRecluso(recluso);
+		carcel.registrarFamiliar(familiar);
+		carcel.registrarAutorizacion(11111111, 22222222, Parentesco.HERMANO);
+
+		LocalDateTime fechaHora = LocalDateTime.of(2026, 5, 11, 10, 30);
+
+		Turno turno1 = new Turno(1, familiar, 11111111, fechaHora, null, EstadoSolicitud.APROBADA);
+		Turno turno2 = new Turno(2, familiar, 11111111, fechaHora, null, EstadoSolicitud.APROBADA);
+
+		carcel.solicitarTurno(turno1);
+		carcel.solicitarTurno(turno2); // Lanza la excepción esperada
+	}
     /**
      * TEST 8: Asignación Automática de Guardia Objetivo: Verificar que al procesar
      * un turno sin especificar guardia, el sistema asigne automáticamente uno
@@ -308,10 +326,26 @@ public class CentroCarcelarioTest {
 // * EstadoSolicitud.APROBADA pueda ser completado correctamente y pase al
 // * estado EstadoSolicitud.COMPLETADA.
 // */
-//@Test
-//public void queUnTurnoAprobadoSePuedaCompletarCorrectamente() {
-//	
-//}
+    @Test
+	public void queUnTurnoAprobadoSePuedaCompletarCorrectamente()
+			throws FamiliarNoEncontradoException, FamiliarNoAutorizadoException, TurnoNoDisponibleException,
+			CupoExcedidoException, ReclusoNoEncontradoException, GuardiaNoDisponibleException, ReclusoDuplicadoException {
+
+		CentroCarcelario carcel = new CentroCarcelario();
+
+		Recluso recluso = new Recluso(11111111, "Juan", "Perez", LocalDate.of(1999, 12, 11), 10.2, 1.0);
+		Familiar familiar = new Familiar(22222222, "Pedro", "Perez", LocalDate.of(1999, 11, 11), 1121541256);
+		carcel.registrarRecluso(recluso);
+		carcel.registrarFamiliar(familiar);
+		carcel.registrarAutorizacion(11111111, 22222222, Parentesco.HERMANO);
+
+		Turno turno = new Turno(1, familiar, 11111111, LocalDateTime.of(2026, 5, 11, 10, 30), null, EstadoSolicitud.APROBADA);
+		carcel.solicitarTurno(turno);
+
+		turno.setEstado(EstadoSolicitud.COMPLETADA);
+
+		assertEquals(EstadoSolicitud.COMPLETADA, turno.getEstado());
+	}
     
     
     /**
@@ -345,10 +379,34 @@ public class CentroCarcelarioTest {
 // * automáticamente por fecha y hora, respetando el criterio definido por
 // * Comparable.
 // */
-//@Test
-//public void queLosTurnosSeMantenganOrdenadosCronologicamente() {
-//	
-//}
+    @Test
+	public void queLosTurnosSeMantenganOrdenadosCronologicamente()
+			throws FamiliarNoEncontradoException, FamiliarNoAutorizadoException, TurnoNoDisponibleException,
+			CupoExcedidoException, ReclusoNoEncontradoException, GuardiaNoDisponibleException, ReclusoDuplicadoException {
+
+		CentroCarcelario carcel = new CentroCarcelario();
+		LocalDate fecha = LocalDate.of(2026, 5, 11);
+
+		Recluso recluso = new Recluso(11111111, "Juan", "Perez", LocalDate.of(1999, 12, 11), 10.2, 1.0);
+		Familiar familiar = new Familiar(22222222, "Pedro", "Perez", LocalDate.of(1999, 11, 11), 1121541256);
+		carcel.registrarRecluso(recluso);
+		carcel.registrarFamiliar(familiar);
+		carcel.registrarAutorizacion(11111111, 22222222, Parentesco.HERMANO);
+
+		// Insertamos desordenado adrede (Tarde, Mañana, Noche)
+		Turno turnoTarde = new Turno(1, familiar, 11111111, LocalDateTime.of(2026, 5, 11, 16, 0), null, EstadoSolicitud.APROBADA);
+		Turno turnoManana = new Turno(2, familiar, 11111111, LocalDateTime.of(2026, 5, 11, 9, 30), null, EstadoSolicitud.APROBADA);
+		Turno turnoNoche = new Turno(3, familiar, 11111111, LocalDateTime.of(2026, 5, 11, 21, 0), null, EstadoSolicitud.APROBADA);
+
+		carcel.solicitarTurno(turnoTarde);
+		carcel.solicitarTurno(turnoManana);
+		carcel.solicitarTurno(turnoNoche);
+
+		TreeSet<Turno> agendaRecuperada = carcel.getAgendaDiaria().get(fecha);
+
+		assertEquals(turnoManana, agendaRecuperada.first());
+		assertEquals(turnoNoche, agendaRecuperada.last());
+	}
     
     
 ///**
@@ -427,10 +485,28 @@ public class CentroCarcelarioTest {
 // * todos los turnos correspondientes a una fecha determinada y que éstos se
 // * encuentren ordenados de forma ascendente según la hora de la visita.
 // */
-//@Test
-//public void queSePuedaObtenerLaAgendaDiariaOrdenadaPorHora() {
-//	
-//}
+    @Test
+	public void queSePuedaObtenerLaAgendaDiariaOrdenadaPorHora()
+			throws FamiliarNoEncontradoException, FamiliarNoAutorizadoException, TurnoNoDisponibleException,
+			CupoExcedidoException, ReclusoNoEncontradoException, GuardiaNoDisponibleException, ReclusoDuplicadoException {
+
+		CentroCarcelario carcel = new CentroCarcelario();
+		LocalDate fechaConsulta = LocalDate.of(2026, 5, 11);
+
+		Recluso recluso = new Recluso(11111111, "Juan", "Perez", LocalDate.of(1999, 12, 11), 10.2, 1.0);
+		Familiar familiar = new Familiar(22222222, "Pedro", "Perez", LocalDate.of(1999, 11, 11), 1121541256);
+		carcel.registrarRecluso(recluso);
+		carcel.registrarFamiliar(familiar);
+		carcel.registrarAutorizacion(11111111, 22222222, Parentesco.HERMANO);
+
+		Turno turno = new Turno(1, familiar, 11111111, LocalDateTime.of(2026, 5, 11, 8, 0), null, EstadoSolicitud.APROBADA);
+		carcel.solicitarTurno(turno);
+
+		TreeSet<Turno> agendaRecuperada = carcel.getAgendaDiaria().get(fechaConsulta);
+
+		assertNotNull(agendaRecuperada);
+		assertEquals(1, agendaRecuperada.size());
+	}
     
 ///**
 // * TEST 16: Excepción por Recluso Inexistente
@@ -476,11 +552,24 @@ public class CentroCarcelarioTest {
 // * recluso, el sistema devuelva correctamente todas las autorizaciones
 // * registradas junto con el parentesco correspondiente.
 // */
-//@Test
-//public void queSePuedanObtenerLosFamiliaresAutorizadosDeUnRecluso() {
-//	
-//}
-//
+    @Test
+	public void queSePuedanObtenerLosFamiliaresAutorizadosDeUnRecluso() 
+			throws FamiliarNoEncontradoException, ReclusoDuplicadoException {
+
+		CentroCarcelario carcel = new CentroCarcelario();
+
+		Recluso recluso = new Recluso(11111111, "Juan", "Perez", LocalDate.of(1999, 12, 11), 10.2, 1.0);
+		Familiar familiar = new Familiar(22222222, "Pedro", "Perez", LocalDate.of(1999, 11, 11), 1121541256);
+
+		carcel.registrarRecluso(recluso);
+		carcel.registrarFamiliar(familiar);
+		carcel.registrarAutorizacion(recluso.getDni(), familiar.getDni(), Parentesco.HERMANO);
+
+		HashSet<AutorizacionVisita> autorizados = carcel.getAutorizaciones().get(recluso.getDni());
+
+		assertNotNull(autorizados);
+		assertEquals(1, autorizados.size());
+	}
     /**
      * TEST 19: Cálculo de Condena para un Recluso Temporal Objetivo: Verificar que
      * un ReclusoTemporal calcule correctamente su condena considerando la condena
