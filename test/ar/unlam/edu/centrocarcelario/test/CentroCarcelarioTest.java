@@ -255,7 +255,7 @@ public class CentroCarcelarioTest {
 		Turno turno2 = new Turno(2, familiar, 11111111, fechaHora, null, EstadoSolicitud.APROBADA);
 
 		carcel.solicitarTurno(turno1);
-		carcel.solicitarTurno(turno2); // Lanza la excepción esperada
+		carcel.solicitarTurno(turno2); 
 	}
     /**
      * TEST 8: Asignación Automática de Guardia Objetivo: Verificar que al procesar
@@ -393,7 +393,7 @@ public class CentroCarcelarioTest {
 		carcel.registrarFamiliar(familiar);
 		carcel.registrarAutorizacion(11111111, 22222222, Parentesco.HERMANO);
 
-		// Insertamos desordenado adrede (Tarde, Mañana, Noche)
+		
 		Turno turnoTarde = new Turno(1, familiar, 11111111, LocalDateTime.of(2026, 5, 11, 16, 0), null, EstadoSolicitud.APROBADA);
 		Turno turnoManana = new Turno(2, familiar, 11111111, LocalDateTime.of(2026, 5, 11, 9, 30), null, EstadoSolicitud.APROBADA);
 		Turno turnoNoche = new Turno(3, familiar, 11111111, LocalDateTime.of(2026, 5, 11, 21, 0), null, EstadoSolicitud.APROBADA);
