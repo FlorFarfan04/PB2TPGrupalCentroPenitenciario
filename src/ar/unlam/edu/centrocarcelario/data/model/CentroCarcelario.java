@@ -22,6 +22,7 @@ public class CentroCarcelario {
 
     private Integer cupoVisitas = 2;
 
+    
     public CentroCarcelario() {
 
 	this.reclusos = new HashSet<>();
@@ -72,7 +73,18 @@ public class CentroCarcelario {
 	return historialTurnos;
     }
 
-    public HashSet<Turno> getHistorialTurnosPorIdRecluso(Integer idRecluso) throws ReclusoNoEncontradoException {
+    
+    public Guardia buscarGuardiaPorDni(Integer dniGuardia) throws GuardiaNoEncontradoException {
+		for (Guardia guardia : guardias) {
+			if(guardia.getDni().equals(dniGuardia)) {
+				return guardia;
+			}
+		}
+		throw new GuardiaNoEncontradoException();
+		
+	}
+	
+	public HashSet<Turno> getHistorialTurnosPorIdRecluso(Integer idRecluso) throws ReclusoNoEncontradoException {
 
 	if (checkReclusoExiste(idRecluso) == null) {
 	    throw new ReclusoNoEncontradoException();
@@ -114,9 +126,32 @@ public class CentroCarcelario {
 	}
 
     }
+    
+    public Boolean verificarQueUnFamiliarEsteAutorizado(Integer dniRecluso, Integer dniFamiliar) {
+    	HashSet<AutorizacionVisita> autorizacionesDelRecluso = autorizaciones.get(dniRecluso);
+    	
+    	if(autorizacionesDelRecluso == null) {
+    		return false;
+    	}
+    	
+    	for (AutorizacionVisita autorizacion : autorizacionesDelRecluso) {
+			if(autorizacion.getDniFamiliar().equals(dniFamiliar)) {
+				return true;
+			}
+		}
+    	
+		return false;
+	}
+    
+  	public Familiar buscarFamiliarPorDni(Integer dnifamiliar) throws FamiliarNoEncontradoException {
+  		if(!this.familiares.containsKey(dnifamiliar)) {
+  			throw new FamiliarNoEncontradoException();
+  		}
+  		
+  		return this.familiares.get(dnifamiliar);
+  	}
 
     public void registrarFamiliar(Familiar familiar) {
-	// TODO Auto-generated method stub
 	this.familiares.put(familiar.getDni(), familiar);
 
     }
@@ -234,13 +269,20 @@ public class CentroCarcelario {
 
     }
 
+    public void agregarBuenaConducta(Recluso recluso, BuenaConducta buenaConducta) {
+    	recluso.historialDisciplinario.add(buenaConducta);
+     }
+    
     public void agregarSancion(Recluso recluso1, Sancion sancion) {
-	recluso1.historialDisciplinario.add(sancion);
-
+    	recluso1.historialDisciplinario.add(sancion);
     }
 
     public Double calcularCondena(Recluso recluso) {
 	return recluso.calcularCondena();
     }
+
+
+
+
 
 }

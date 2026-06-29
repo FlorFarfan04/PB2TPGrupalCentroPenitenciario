@@ -6,11 +6,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
+
+import javax.imageio.plugins.tiff.TIFFImageReadParam;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import ar.unlam.edu.centrocarcelario.data.model.BuenaConducta;
 import ar.unlam.edu.centrocarcelario.data.model.CentroCarcelario;
 import ar.unlam.edu.centrocarcelario.data.model.CupoExcedidoException;
 import ar.unlam.edu.centrocarcelario.data.model.EstadoSolicitud;
@@ -19,13 +24,16 @@ import ar.unlam.edu.centrocarcelario.data.model.FamiliarNoAutorizadoException;
 import ar.unlam.edu.centrocarcelario.data.model.FamiliarNoEncontradoException;
 import ar.unlam.edu.centrocarcelario.data.model.Guardia;
 import ar.unlam.edu.centrocarcelario.data.model.GuardiaNoDisponibleException;
+import ar.unlam.edu.centrocarcelario.data.model.GuardiaNoEncontradoException;
 import ar.unlam.edu.centrocarcelario.data.model.Parentesco;
 import ar.unlam.edu.centrocarcelario.data.model.Persona;
 import ar.unlam.edu.centrocarcelario.data.model.Recluso;
 import ar.unlam.edu.centrocarcelario.data.model.ReclusoDuplicadoException;
 import ar.unlam.edu.centrocarcelario.data.model.ReclusoNoEncontradoException;
+import ar.unlam.edu.centrocarcelario.data.model.RegistroDisciplinario;
 import ar.unlam.edu.centrocarcelario.data.model.Sancion;
 import ar.unlam.edu.centrocarcelario.data.model.TipoCrimen;
+import ar.unlam.edu.centrocarcelario.data.model.TipoRecluso;
 import ar.unlam.edu.centrocarcelario.data.model.Turno;
 import ar.unlam.edu.centrocarcelario.data.model.TurnoNoDisponibleException;
 
@@ -79,10 +87,29 @@ public class CentroCarcelarioTest {
 // * visitar a un recluso determinado, almacenando correctamente el parentesco
 // * mediante una AutorizacionVisita.
 // */
-//@Test
-//public void queSePuedaRegistrarUnFamiliarYAutorizarloParaVisitarUnRecluso() {
-//	
-//}
+    
+    @Test
+    public void queSePuedaRegistrarUnFamiliarYAutorizarloParaVisitarUnRecluso() throws FamiliarNoEncontradoException, ReclusoDuplicadoException {
+    	CentroCarcelario carcel = new CentroCarcelario();
+    	Recluso recluso = new Recluso(44455555, "Pablo", "Gomez", LocalDate.of(2000, 12, 12), 10.5, 1.0);
+    	Familiar familiar = new Familiar(23323277, "Marta", "Gomez", LocalDate.of(1980, 4, 20), 1132323777);
+    	
+    	carcel.registrarRecluso(recluso);
+    	carcel.registrarFamiliar(familiar);
+    	
+    	Familiar familiarBuscado = carcel.buscarFamiliarPorDni(23323277);
+    	
+    	assertEquals(familiar, familiarBuscado);
+    	
+    	carcel.registrarAutorizacion(recluso.getDni(), familiar.getDni(), Parentesco.MADRE);
+    	
+    	
+    	Boolean estaAutorizado = carcel.verificarQueUnFamiliarEsteAutorizado(recluso.getDni(), familiar.getDni());
+    	
+    	assertTrue(estaAutorizado);;
+    }
+    
+    
     /**
      * TEST 3: Intento de Autorizar un Familiar No Registrado Objetivo: Validar que
      * al intentar autorizar a un familiar inexistente, el sistema lance la
@@ -109,10 +136,31 @@ public class CentroCarcelarioTest {
 // * un turno de visita y que éste sea registrado con estado
 // * EstadoSolicitud.APROBADA.
 // */
-//@Test
-//public void queSePuedaSolicitarUnTurnoConUnFamiliarAutorizado() {
-//	
-//}
+    
+    @Test
+    public void queSePuedaSolicitarUnTurnoConUnFamiliarAutorizado() throws FamiliarNoEncontradoException, ReclusoDuplicadoException, FamiliarNoAutorizadoException, TurnoNoDisponibleException, CupoExcedidoException, ReclusoNoEncontradoException, GuardiaNoDisponibleException {
+    	CentroCarcelario carcel = new CentroCarcelario();
+
+    	Recluso recluso = new Recluso(44455555, "Pablo", "Gomez", LocalDate.of(2000, 12, 12), 10.5, 1.0);
+    	Familiar familiar = new Familiar(23323277, "Marta", "Gomez", LocalDate.of(1980, 4, 20), 1132323777);
+    	
+    	carcel.registrarRecluso(recluso);
+    	carcel.registrarFamiliar(familiar);
+    	
+    	
+    	carcel.registrarAutorizacion(recluso.getDni(), familiar.getDni(), Parentesco.MADRE);
+    	
+    	Guardia guardia = new Guardia(12345678, "Carlos", "Rodriguez", LocalDate.of(1981, 5, 2), "Manaña");
+    	carcel.registrarGuardia(guardia);
+    	
+    	Turno turno = new Turno(1, familiar, 44455555, LocalDateTime.of(2026, 05, 11, 10, 30), guardia, EstadoSolicitud.APROBADA);
+
+    	
+    	assertTrue(carcel.solicitarTurno(turno));
+    	assertEquals(1, carcel.getHistorialTurnosPorIdRecluso(44455555).size());
+    }
+    
+    
     /**
      * TEST 5: Solicitud de Turno con Familiar No Autorizado Objetivo: Comprobar que
      * al solicitar una visita con un familiar que no se encuentra autorizado para
@@ -190,6 +238,7 @@ public class CentroCarcelarioTest {
 //public void queNoSePuedanRegistrarDosTurnosParaElMismoReclusoEnElMismoHorario() {
 //	
 //}
+    
     /**
      * TEST 8: Asignación Automática de Guardia Objetivo: Verificar que al procesar
      * un turno sin especificar guardia, el sistema asigne automáticamente uno
@@ -263,6 +312,8 @@ public class CentroCarcelarioTest {
 //public void queUnTurnoAprobadoSePuedaCompletarCorrectamente() {
 //	
 //}
+    
+    
     /**
      * TEST 11: Cálculo de Condena con Historial Disciplinario Objetivo: Verificar
      * que al agregar sanciones y registros de buena conducta al historial de un
@@ -298,16 +349,39 @@ public class CentroCarcelarioTest {
 //public void queLosTurnosSeMantenganOrdenadosCronologicamente() {
 //	
 //}
+    
+    
 ///**
 // * TEST 13: Ordenamiento Cronológico del Historial Disciplinario
 // * Objetivo: Verificar que los registros disciplinarios (sanciones y buenas
 // * conductas) se mantengan ordenados cronológicamente dentro del TreeSet
 // * asociado al recluso.
 // */
-//@Test
-//public void queLosRegistrosDisciplinariosSeMantenganOrdenadosCronologicamente() {
-//	
-//}
+    
+    @Test
+    public void queLosRegistrosDisciplinariosSeMantenganOrdenadosCronologicamente() throws ReclusoDuplicadoException {
+    	CentroCarcelario carcel = new CentroCarcelario();
+    	
+    	Recluso recluso = new Recluso(44455555, "Pablo", "Gomez", LocalDate.of(2000, 12, 12), 10.5, 1.0);
+    	carcel.registrarRecluso(recluso);
+    	
+    	BuenaConducta buenaConducta = new BuenaConducta(LocalDate.of(2026, 8, 23), "Servicio comunitario", 5);
+    	Sancion sancion1 = new Sancion(LocalDate.of(2026, 8, 12), "Pelea", 7);
+    	Sancion sancion2 = new Sancion(LocalDate.of(2026, 11, 12), "Intento de fuga", 10);
+    	
+    	carcel.agregarBuenaConducta(recluso, buenaConducta);
+    	carcel.agregarSancion(recluso, sancion1);
+    	carcel.agregarSancion(recluso, sancion2);
+    	
+    	
+    	TreeSet<RegistroDisciplinario> historial = recluso.getHistorialDisciplinario();
+    	Iterator<RegistroDisciplinario> it = historial.iterator();
+    	
+    	assertEquals(LocalDate.of(2026, 8, 12), it.next().getFecha());
+    	assertEquals(LocalDate.of(2026, 8, 23), it.next().getFecha());
+    	assertEquals(LocalDate.of(2026, 11, 12), it.next().getFecha());
+    }
+    
 ///**
 // * TEST 14: Consulta del Historial de Visitas de un Recluso
 // * Objetivo: Verificar que el sistema pueda recuperar correctamente todos los
@@ -357,6 +431,7 @@ public class CentroCarcelarioTest {
 //public void queSePuedaObtenerLaAgendaDiariaOrdenadaPorHora() {
 //	
 //}
+    
 ///**
 // * TEST 16: Excepción por Recluso Inexistente
 // * Objetivo: Validar que al intentar buscar o realizar una operación sobre un
@@ -374,16 +449,27 @@ public class CentroCarcelarioTest {
 	carcel.getHistorialTurnosPorIdRecluso(3);
     }
 
+    
 ///**
 // * TEST 17: Excepción por Guardia Inexistente
 // * Objetivo: Verificar que al intentar asignar o consultar un guardia que no
 // * fue previamente registrado, el sistema lance la excepción
 // * GuardiaNoEncontradoException.
 // */
-//@Test(expected = GuardiaNoEncontradoException.class)
-//public void queAlBuscarUnGuardiaInexistenteSeLanceGuardiaNoEncontradoException() {
-//	
-//}
+    
+    @Test(expected = GuardiaNoEncontradoException.class)
+    public void queAlBuscarUnGuardiaInexistenteSeLanceGuardiaNoEncontradoException() throws GuardiaNoEncontradoException {
+    	CentroCarcelario carcel = new CentroCarcelario();
+
+    	Guardia guardia = new Guardia(12345678, "Carlos", "Rodriguez", LocalDate.of(1981, 5, 2), "Manaña");
+    	Guardia guardia2 = new Guardia(12348888, "Pedro", "Alvarez", LocalDate.of(1990, 6, 21), "Noche");
+    	
+    	carcel.registrarGuardia(guardia);
+    	
+    	carcel.buscarGuardiaPorDni(guardia2.getDni());
+    }
+    
+    
 ///**
 // * TEST 18: Consulta de Familiares Autorizados
 // * Objetivo: Comprobar que al consultar los familiares autorizados de un
@@ -425,14 +511,43 @@ public class CentroCarcelarioTest {
 
 	assertEquals(15, condena, 0.1);
     }
+    
+    
 ///**
 // * TEST 20: Evaluación de Revisión de Condena para un Recluso Perpetuo
 // * Objetivo: Comprobar que un ReclusoPerpetuo pueda ser evaluado para una
 // * revisión de condena según las reglas establecidas y las condiciones de
 // * comportamiento registradas en su historial disciplinario.
 // */
-//@Test
-//public void queUnReclusoPerpetuoPermitaEvaluarLaRevisionDeSuCondena() {
-//	
-//}
+    
+    @Test
+    public void queUnReclusoPerpetuoPermitaEvaluarLaRevisionDeSuCondena() throws ReclusoDuplicadoException {
+    	CentroCarcelario carcel = new CentroCarcelario();
+    	
+    	Recluso recluso = new Recluso(44455555, "Pablo", "Gomez", LocalDate.of(2000, 12, 12), 50.5, 1.0);
+    	carcel.registrarRecluso(recluso);
+    	
+    	recluso.getListaTipoCrimen().add(TipoCrimen.CORRUPCION);
+    	recluso.calcularTipoRecluso();
+    	assertEquals(TipoRecluso.PERPETUO, recluso.getTipoRecluso());
+    	
+    	assertEquals(52.5, recluso.calcularCondena(), 1.0);
+    	
+    	
+    	BuenaConducta buenaConducta = new BuenaConducta(LocalDate.of(2010, 8, 23), "Servicio comunitario", 5);
+    	BuenaConducta buenaConducta2 = new BuenaConducta(LocalDate.of(2010, 9, 5), "Servicio comunitario", 5);
+    	
+    	carcel.agregarBuenaConducta(recluso, buenaConducta);
+    	carcel.agregarBuenaConducta(recluso, buenaConducta2);
+
+    	assertEquals(51.5, recluso.calcularCondena(), 1.0);
+    	
+    }
+
+    
+    
+    
+    
+    
+
 }
