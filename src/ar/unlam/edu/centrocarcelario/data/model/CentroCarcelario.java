@@ -19,8 +19,6 @@ public class CentroCarcelario {
 
 	private HashMap<LocalDate, TreeSet<Turno>> agendaDiaria;
 
-	private static final Integer CUPO_MAXIMO_DIARIO = 5;
-
 	public CentroCarcelario() {
 
 		this.reclusos = new HashSet<>();
